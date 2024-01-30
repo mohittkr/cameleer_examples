@@ -67,3 +67,43 @@ let maptest2 m =
 let maptest3 m =
   (* walk the map and accumulate the values that the keys map to *)
   map_fold (fun _ v acc -> acc + v) m 0
+
+
+(*** Examples for sets **)  
+let rec string_set_add (x: string) (l: (string) list) : (string) list =
+  match l with
+  | [] -> x :: [] 
+  | h :: t -> if h = x then h :: t else h :: string_set_add x t
+
+let rec string_set_union (x: (string) list) (l: (string) list) :
+  (string) list =
+  match l with
+  | [] -> x
+  | h :: t -> string_set_union (string_set_add h x) t 
+
+let rec string_set_mem (x: string) (l: (string) list) : bool =
+  match l with
+  | [] -> false
+  | y :: r -> x = y || string_set_mem x r
+
+(* wrappers for set functions *)
+let set_add = StrSet.add
+let set_union = StrSet.union
+let set_mem = StrSet.mem
+
+let set_test1 s = 
+  let s1 = set_add "1" s in 
+  set_mem "1" s1
+
+let set_test2 =
+    let s1 = set_mem "1" (set_add "1" StrSet.empty) in 
+    let s2 = string_set_mem "1" (string_set_add "1" []) in
+    s1 = s2
+
+let set_test3 = 
+    let s1 = set_union StrSet.empty (StrSet.singleton "1") in 
+    let s2 = string_set_union [] ["2"] in
+    set_mem "1" s1 = string_set_mem "1" s2
+
+
+let () = Printf.printf "%b \n" set_test3
